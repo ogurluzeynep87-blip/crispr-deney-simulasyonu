@@ -2,9 +2,22 @@
 import streamlit as st
 import pandas as pd
 import joblib
+import os
+import requests
+import joblib
 
-# Modeli yükle
-model = joblib.load("crispr_model.pkl")
+MODEL_URL = "https://huggingface.co/user2026-ai/crispr_model.pkl/resolve/main/crispr_model.pkl"
+MODEL_PATH = "/tmp/crispr_model.pkl"
+
+if not os.path.exists(MODEL_PATH):
+    r = requests.get(MODEL_URL, stream=True)
+    r.raise_for_status()
+    with open(MODEL_PATH, "wb") as f:
+        for chunk in r.iter_content(chunk_size=1024 * 1024):
+            if chunk:
+                f.write(chunk)
+
+model = joblib.load(MODEL_PATH)
 
 st.title("🧬 CRISPR Deney Simülasyonu")
 
